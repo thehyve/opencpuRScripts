@@ -1,0 +1,9 @@
+Package: r-transmart-base-ui
+Type: Package
+Title: r-transmart-base-ui
+Version: 0.1
+Date: 2015-07-23
+Author: Jeremy
+Maintainer: Jeremy <jeremy@thehyve.nl>
+Description: r-transmart-base-ui
+License: GPL
