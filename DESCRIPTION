@@ -7,3 +7,5 @@ Author: Jeremy
 Maintainer: Jeremy <jeremy@thehyve.nl>
 Description: r-transmart-base-ui
 License: GPL
+Depends: R (>= 3.1.0)
+LazyData: true
