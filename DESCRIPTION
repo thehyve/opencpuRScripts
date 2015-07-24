@@ -1,6 +1,6 @@
-Package: r-transmart-base-ui
+Package: rtransmartbaseui
 Type: Package
-Title: r-transmart-base-ui
+Title: rtransmartbaseui
 Version: 0.1
 Date: 2015-07-23
 Author: Jeremy
