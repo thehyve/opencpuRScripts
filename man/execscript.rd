@@ -1,2 +1,2 @@
-/title{execscript}
-/name{execscript}
+\title{execscript}
+\name{execscript}
