@@ -1,5 +1,4 @@
 import(RCurl)
 import(httr)
 import(hash)
-export(execscript)
-export(getHighdimData)
+exportPattern("^[[:alpha:]]+")
