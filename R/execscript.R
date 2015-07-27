@@ -1,3 +1,5 @@
+library(RCurl)
+
 execscript <- function(text){
 
   writeLines(text, con="input.R")
