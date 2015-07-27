@@ -1,1 +1,3 @@
+import(RCurl)
+import(httr)
 export(execscript)
