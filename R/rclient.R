@@ -1,3 +1,7 @@
+library(httr)
+library(RCurl)
+library(RProtoBuf)
+
 .transmartServerGetRequest <- function(apiCall, auth_token, accept.type)  {
 
   httpHeaderFields <- c(Authorization = paste("Bearer ", auth_token, sep=""))
@@ -41,8 +45,6 @@ function(apiCall, httpHeaderFields, accept.type) {
         h <- basicTextGatherer()
         result$content <- getBinaryURL(apiCall,
                 .opts = list(headerfunction = h$update),
-                noprogress = FALSE,
-                progressfunction = function(down, up) {up[which(up == 0)] <- NA; progress$update(down, up) },
                 httpheader = httpHeaderFields)
         result$header <- parseHTTPHeader(h$value())
         if (getOption("verbose")) {
@@ -69,7 +71,6 @@ getStudies <- function(auth.token, name.match = "", as.data.frame = TRUE, cull.c
 
   if (as.data.frame) {
     dataFrameStudies <- .listToDataFrame(listOfStudies)
-    return(dataFrameStudies)
     if (cull.columns) {
       columnsToKeep <- match(c("id", "api.link.self.href", "ontologyTerm.fullName"), names(dataFrameStudies))
       if (any(is.na(columnsToKeep))) {
@@ -86,9 +87,7 @@ getStudies <- function(auth.token, name.match = "", as.data.frame = TRUE, cull.c
   listOfStudies
 }
 
-getHighdimData <- function(auth.token, study.name, concept.match = NULL, concept.link = NULL, projection = NULL,
-                           progress.download = .make.progresscallback.download(),
-                           progress.parse = .make.progresscallback.parse()) {
+getHighdimData <- function(auth.token, study.name, concept.match = NULL, concept.link = NULL, projection = NULL) {
 
 
   if (is.null(concept.link) && !is.null(concept.match)) {
@@ -131,7 +130,7 @@ getHighdimData <- function(auth.token, study.name, concept.match = NULL, concept
     return(NULL)
   }
 
-  return(.parseHighdimData(serverResult$content, progress = progress.parse))
+  return(.parseHighdimData(serverResult$content))
 }
 
 getConcepts <- function(auth.token, study.name, as.data.frame = TRUE, cull.columns = TRUE) {
@@ -185,7 +184,7 @@ getConcepts <- function(auth.token, study.name, as.data.frame = TRUE, cull.colum
 }
 
 .parseHighdimData <-
-function(rawVector, .to.data.frame.converter=.as.data.frame.fast, progress=.make.progresscallback.parse()) {
+function(rawVector, .to.data.frame.converter=.as.data.frame.fast) {
     dataChopper <- .messageChopper(rawVector)
 
     message <- dataChopper$getNextMessage()
@@ -233,8 +232,6 @@ function(rawVector, .to.data.frame.converter=.as.data.frame.fast, progress=.make
     message("Received data for ", noAssays, " assays. Unpacking data. ", as.character(Sys.time()))
 
     totalsize <- length(rawVector)
-    progress$start(totalsize)
-    callback <- progress$update
 
     labelToBioMarker <- hash() #biomarker info is optional, but should not be omitted, as it is also part of the data
 
@@ -244,8 +241,6 @@ function(rawVector, .to.data.frame.converter=.as.data.frame.fast, progress=.make
 
         labelToBioMarker[[rowlabel]] <- (if(is.null(row$bioMarker)) NA_character_ else row$bioMarker)
         rowValues <- row$value
-
-        callback(dataChopper$getRawVectorIndex(), totalsize)
 
         if(length(rowValues) == 1) {
             # if only one value, don't add the columnSpec name to the rowlabel.
@@ -267,7 +262,6 @@ function(rawVector, .to.data.frame.converter=.as.data.frame.fast, progress=.make
         }
 
     }
-    progress$end()
 
     message("Data unpacked. Converting to data.frame. ", as.character(Sys.time()))
 
