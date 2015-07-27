@@ -1,4 +1,5 @@
 library(RCurl)
+library(httr)
 
 execscript <- function(text){
 
