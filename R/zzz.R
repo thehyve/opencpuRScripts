@@ -22,6 +22,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 .onAttach <- function(...) {
-    protoFileLocation <- system.file("inst", "highdim.proto", package = "rtransmartbaseui")
+    protoFileLocation <- system.file("inst", "highdim.proto", package = "rtransmartbaseu")
     readProtoFiles(protoFileLocation)
 }
