@@ -1,10 +1,10 @@
-Package: rtransmartbaseu
+Package: opencpurclient
 Type: Package
-Title: rtransmartbaseui
+Title: opencpurclient
 Version: 0.1
 Date: 2015-07-23
-Author: Jeremy
-Maintainer: Jeremy <jeremy@thehyve.nl>
+Author: TheHyve
+Maintainer: TheHyve <office@thehyve.nl>
 Description: r-transmart-base-ui
 License: GPL
 Depends: R (>= 3.1.0)
