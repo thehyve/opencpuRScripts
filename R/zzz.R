@@ -22,6 +22,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 .onAttach <- function(...) {
-    protoFileLocation <- system.file("extdata", "highdim.proto", package = "rtransmartbaseu")
+    protoFileLocation <- system.file("extdata", "highdim.proto", package = "opencpurclient")
     readProtoFiles(protoFileLocation)
 }
