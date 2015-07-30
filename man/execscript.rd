@@ -1,2 +1,0 @@
-\title{execscript}
-\name{execscript}
