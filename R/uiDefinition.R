@@ -1,6 +1,9 @@
 library(R6)
 require(jsonlite)
 
+# Classes for defining the UI of an analysis
+
+
 AnalysisUI <- R6Class("AnalysisUI",
   public = list(
     steps = list(),
