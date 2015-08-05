@@ -21,6 +21,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 .onAttach <- function(...) {
-    protoFileLocation <- system.file("extdata", "highdim.proto", package = "transmartRClient")
+    protoFileLocation <- system.file("extdata", "highdim.proto", package = "opencpuRScripts")
     readProtoFiles(protoFileLocation)
 }
