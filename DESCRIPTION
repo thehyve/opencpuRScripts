@@ -7,5 +7,5 @@ Author: TheHyve
 Maintainer: TheHyve <office@thehyve.nl>
 Description: OpenCPU R Scripts
 License: GPL
-Depends: gplots,reshape2,RCurl,httr,hash,RProtoBuf,plyr,jsonlite
+Depends: gplots,reshape2,RCurl,httr,hash,RProtoBuf,plyr,RJSONIO,jsonlite
 LazyData: true
