@@ -23,33 +23,47 @@
 require(gplots)
 require(reshape2)
 
-produceUI <- function () {
-  step1 <- StepUI$new("Fetch data", "fetchData", "opencpuRScripts")
+Analysis(title = "Heatmap",
+  Step( title = "Fetch data", func = "fetchData", package = "opencpuRScripts",
 
-  step1$add_input(InConceptUI$new("Select a highdimensional concept", list("apiUrl", "auth.token", "study.name", "concept.link")))
-  step1$add_input(InDropdownUI$new("Select a projection", "projection", list("zscore", "default_real_projection")))
-  step1$add_ouput(OutInfoText$new("RUNNING", "Fetching data..."))
-  step1$add_ouput(OutInfoText$new("DONE", "Data fetched, proceed to next step."))
+    ConceptInput( title = "Select a highdimensional concept",
+                  param = list("apiUrl", "auth.token", "study.name", "concept.link")),
 
-  step2 <- StepUI$new("Pre-process data", "preprocessDataHeatmap", "opencpuRScripts")
+    DropdownInput(title = "Select a projection",
+                  param = "projection",
+                  options = list("zscore", "default_real_projection")),
 
-  step2$add_input(InDropdownUI$new("Select a preprocessing option", "preprocess", list("zscore", "logfold")))
-  step2$add_ouput(OutInfoText$new("RUNNING", "Pre-processing data..."))
-  step2$add_ouput(OutInfoText$new("DONE", "Done."))
+    InfoTextOutput( when = "RUNNING",
+                    message = "Fetching data..."),
 
-  step3 <- StepUI$new("Produce heatmap", "generateArtefactsHeatmap", "opencpuRScripts", final = TRUE)
+    InfoTextOutput( when = "DONE",
+                    message = "Data fetched, proceed to next step.")
+  ),
 
-  step3$add_ouput(OutInfoText$new("RUNNING", "Producing heatmap..."))
-  step3$add_ouput(OutInfoText$new("DONE", ""))
-  step3$add_ouput(OutImage$new("heatmap.png"))
+  Step(title = "Pre-process data", func = "preprocessDataHeatmap", package = "opencpuRScripts",
 
-  analysis <- AnalysisUI$new()
-  analysis$add_step(step1)
-  analysis$add_step(step2)
-  analysis$add_step(step3)
+    DropdownInput(title = "Select a preprocessing option",
+                  param = "preprocess",
+                  options = list("zscore", "logfold")),
 
-  return(analysis$produce())
-}
+    InfoTextOutput( when = "DONE",
+                    message = "Done."),
+
+    InfoTextOutput( when = "RUNNING",
+                    message = "Pre-processing data...")
+
+  ),
+  Step(title = "Produce heatmap", func = "generateArtefactsHeatmap", package = "opencpuRScripts",
+
+    ImageOutput(filename = "heatmap.png"),
+
+    InfoTextOutput( when = "DONE",
+                    message = ""),
+
+    InfoTextOutput( when = "RUNNING",
+                    message = "Producing heatmap...")
+  )
+)
 
 # Step 1: fetch the data
 # for instance: fetchData("CELL-LINE", "Normalised ratios", "default_real_projection")
