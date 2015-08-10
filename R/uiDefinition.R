@@ -20,137 +20,115 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-library(R6)
-require(jsonlite)
+#' Analysis
+#'
+#' Takes a list of steps and exposes a function "produceUI" that returns an R
+#' object describing the UI.
+#'
+#' @param title Title of the analysis
+#' @param ... A list of steps (the Step function should be used for this)
+#' @return NULL
+Analysis <- function (title, ...) {
+  steps <- list(...)
+  assign("produceUI", function(){return(steps)}, envir=parent.env(environment()))
+  return(NULL)
+}
 
-# Classes for defining the UI of an analysis
+#' Step
+#'
+#' Takes a list of inputs and outputs and returns an R object (list)
+#' describing the step.
+#'
+#' @param title Title of the step.
+#' @param func The function to be called at the end of this step.
+#' @param package The package that contains the function \code{func}.
+#' @param ... A list of inputs and/or outputs (the provided functions should
+#' be used for this)
+#' @return A list describing the step.
+Step <- function (title, func, package, ...) {
+  inputs <- list()
+  outputs <- list()
+  steps <- list(...)
 
-AnalysisUI <- R6Class("AnalysisUI",
-  public = list(
-    steps = list(),
-    initialize = function() {
-    },
-    add_step = function(step) {
-      self$steps <- append(self$steps, step, after = length(self$steps))
-    },
-    produce = function(){
-      return(lapply(self$steps, function(x){x$convert()}))
+  for(x in steps){
+    if(x$io == "INPUT"){
+      inputs <- append(inputs, list(x), after = length(inputs))
+    }else if(x$io == "OUTPUT"){
+      outputs <- append(outputs, list(x), after = length(outputs))
     }
-  )
-)
+  }
 
-StepUI <- R6Class("StepUI",
-  public = list(
-    name = NA,
-    final = NA,
-    inputs = list(),
-    outputs = list(),
-    func = NA,
-    package = NA,
-    initialize = function(name, func, package, final = FALSE) {
-      self$name <- name
-      self$final <- final
-      self$func <- func
-      self$package <- package
-    },
-    add_input = function(inp) {
-      self$inputs <- append(self$inputs, inp, after = length(self$inputs))
-    },
-    add_ouput = function(out) {
-      self$outputs <- append(self$outputs, out, after = length(self$outputs))
-    },
-    convert = function(){
-      return(list(name=self$name,
-                  final=self$final,
-                  func=self$func,
-                  package=self$package,
-                  inputs=lapply(self$inputs, function(x){x$convert()}),
-                  outputs=lapply(self$outputs, function(x){x$convert()})))
-    }
-  )
-)
+  return(list(
+    title=title,
+    func=func,
+    package=package,
+    outputs=outputs,
+    inputs=inputs
+  ))
+}
 
-InConceptUI <- R6Class("InConceptUI",
-  public = list(
-    title = NA,
-    param = NA,
-    type = "CONCEPT",
-    initialize = function(title, param) {
-      self$title <- title
-      self$param <- param
-    },
-    convert = function(){
-      return(list(title=self$title,
-                  param=self$param,
-                  type=self$type))
-    }
-  )
-)
+#' ConceptInput
+#'
+#' Creates a list describing a concept input.
+#'
+#' @param title Title of the input.
+#' @param param The name of the parameter to which the value of the input will
+#' be associated in the function call of it's parent step.
+#' @return A list describing the input.
+ConceptInput <- function(title, param) {
+  return(list(
+    title=title,
+    param=param,
+    io="INPUT",
+    type="CONCEPT"
+  ))
+}
 
-InFixedUI <- R6Class("InFixed",
- public = list(
-   param = NA,
-   value = NA,
-   type = "INFIXED",
-   initialize = function(param, value) {
-     self$param <- param
-     self$value <- value
-   },
-   convert = function(){
-     return(list(param=self$param,
-                 value=self$value,
-                 type=self$type))
-   }
- )
-)
+#' DropdownInput
+#'
+#' Creates a list describing a dropdown input.
+#'
+#' @param title Title of the input.
+#' @param param The name of the parameter to which the value of the input will
+#' be associated in the function call of it's parent step.
+#' @param options Options which will be displayed in the dropdown.
+#' @return A list describing the input.
+DropdownInput <- function(title, param, options) {
+  return(list(
+    title=title,
+    param=param,
+    options=options,
+    io="INPUT",
+    type="DROPDOWN"
+  ))
+}
 
-InDropdownUI <- R6Class("InDropdownUI",
-   public = list(
-     title = NA,
-     param = NA,
-     options = list(),
-     type = "DROPDOWN",
-     initialize = function(title, param, options) {
-       self$title <- title
-       self$param <- param
-       self$options <- options
-     },
-     convert = function(){
-       return(list(title=self$title,
-                   param=self$param,
-                   options=self$options,
-                   type=self$type))
-     }
-   )
-)
+#' InfoTextOutput
+#'
+#' Creates a list describing a text output.
+#'
+#' @param message The message to be displayed when the chosen event is triggered.
+#' @param when The event triggering the display of the message.
+#' @return A list describing the output.
+InfoTextOutput <- function(message, when = list("RUNNING", "DONE")){
+  return(list(
+    when=when,
+    message=message,
+    io="OUTPUT",
+    type="INFOTEXT"
+  ))
+}
 
-OutInfoText <- R6Class("OutInfoText",
-  public = list(
-    when = NA,
-    message = NA,
-    type = "INFOTEXT",
-    initialize = function(when = list("RUNNING", "DONE"), message) {
-      self$when <- when
-      self$message <- message
-    },
-    convert = function(){
-      return(list(when=self$when,
-                  message=self$message,
-                  type=self$type))
-    }
-  )
-)
-
-OutImage <- R6Class("OutImage",
-  public = list(
-   filename = NA,
-   type = "IMAGE",
-   initialize = function(filename) {
-     self$filename <- filename
-   },
-   convert = function(){
-     return(list(filename=self$filename,
-                 type=self$type))
-   }
-  )
-)
+#' ImageOutput
+#'
+#' Creates a list describing an image output.
+#'
+#' @param filename The filename of the image.
+#' @return A list describing the output.
+ImageOutput <- function(filename) {
+  return(list(
+    filename=filename,
+    io="OUTPUT",
+    type="IMAGE"
+  ))
+}
