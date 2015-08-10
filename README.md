@@ -77,6 +77,7 @@ would produce:
   }
 ]
 ```
+
 ## Describing the steps of an analysis
 
 Each step of an analysis if represented by a function. The name of this function
