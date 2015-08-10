@@ -1,8 +1,12 @@
 # opencpuRScripts
 
 This package provides the server-side prototype of how a tranSMART advanced
-analysis could be described in R and served through a RESTful API. An example
-for a heatmap analysis is provided in the *example* folder.
+analysis could be described in R and served through a RESTful API.
+
+The goal is to provided an easy way to build an an advanced analysis plugin
+as an R package using a UI definition language library.
+
+An example for a heatmap analysis is provided in the *example* folder.
 
 ## Describing the UI of an analysis
 
@@ -36,20 +40,12 @@ Analysis(title = "Heatmap",
         func = "fetchData",
         package = "opencpuRScripts",
 
-    ConceptInput( title = "Select a highdimensional concept",
-                  param = list("apiUrl", "auth.token", "study.name",
-                   "concept.link")),
-
     DropdownInput(title = "Select a projection",
                   param = "projection",
                   options = list("zscore", "default_real_projection")),
 
     InfoTextOutput( when = "RUNNING",
                     message = "Fetching data..."),
-
-    InfoTextOutput( when = "DONE",
-                    message = "Data fetched, proceed to next step.")
-  ),
   ...
 
 ```
@@ -60,3 +56,23 @@ Each step of an analysis if represented by a function. The name of this function
 must be provided as the `func` parameter of the `Step()` function. The output of
 a function is expected to be provided as the `data` parameter of the subsequent
 function.
+
+## Serving the analysis through openCPU
+
+The OpenCPU server provides a clean and simple API interface to R. The
+functions of an R package installed on the server are available through the API.
+
+```
+/ocpu/library/[packageName]/R/[functionName]
+```
+
+Once a function is called with a POST request, the result can retrieved with the
+returned unique token.
+
+```
+/ocpu/tmp/[session key]/
+```
+
+Thus when an R package representing an analysis is available on the server, the
+`produceUI()` can be called by the front-end to fetch a JSON file describing the
+UI for the analysis. The steps of the analysis can be executed in a similar way.
