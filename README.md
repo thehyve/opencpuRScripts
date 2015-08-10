@@ -45,11 +45,38 @@ Analysis(title = "Heatmap",
                   options = list("zscore", "default_real_projection")),
 
     InfoTextOutput( when = "RUNNING",
-                    message = "Fetching data..."),
-  ...
-
+                    message = "Fetching data...")
+  )
+)
 ```
 
+would produce:
+```
+[  
+  {  
+    "title":["Fetch data"],
+    "func":["fetchData"],
+    "package":["opencpuRScripts"],
+    "outputs":[  
+       {  
+          "when":["RUNNING"],
+          "message":["Fetching data..."],
+          "io":["OUTPUT"],
+          "type":["INFOTEXT"]
+       }
+    ],
+    "inputs":[  
+       {  
+          "title":["Select a projection"],
+          "param":["projection"],
+          "options":[["zscore"],["default_real_projection"]],
+          "io":["INPUT"],
+          "type":["DROPDOWN"]
+       }
+    ]
+  }
+]
+```
 ## Describing the steps of an analysis
 
 Each step of an analysis if represented by a function. The name of this function
